@@ -7,7 +7,7 @@ import io
 import base64
 
 st.set_page_config(
-    page_title="Image to Sketch Converter",
+    page_title="Konversi Gambar ke Sketsa Pensil",
     initial_sidebar_state="expanded",
 )
 
@@ -25,19 +25,17 @@ def get_sketched_image(img):
     file_bytes = np.asarray(bytearray(img), dtype=np.uint8)
     cvImage = cv2.imdecode(file_bytes, 1)
 
-    #cvImage = cv2.imread(Image.open(uploaded_file))
     cvImageGrayScale = cv2.cvtColor(cvImage, cv2.COLOR_BGR2GRAY)
-    cvImageGrayScaleInversion = cv2.bitwise_not(cvImageGrayScale)
-    cvImageBlured = cv2.GaussianBlur(
-        cvImageGrayScaleInversion, (21, 21), sigmaX=0, sigmaY=0)
+    cvImageGrayScaleInversion = 255 - cvImageGrayScale
+    cvImageBlured = cv2.GaussianBlur(cvImageGrayScaleInversion, (21, 21), 0)
     sketchImage = cv2.divide(cvImageGrayScale, 255 - cvImageBlured, scale=256)
 
     return sketchImage
 
 
-st.title("Convert your Image to Sketch")
+st.title("Konversi Gambar ke Sketsa")
 
-st.sidebar.title("Upload your image")
+st.sidebar.title("Unggah Gambar")
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
@@ -49,26 +47,26 @@ uploaded_file = st.sidebar.file_uploader(" ", type=['png', 'jpg', 'jpeg'])
 if uploaded_file is not None:
     image.image(uploaded_file)
 
-if st.sidebar.button("Convert to sketch"):
+if st.sidebar.button("Mulai Konversi"):
 
     if uploaded_file is None:
-        st.sidebar.error("Please upload a image to convert")
+        st.sidebar.error("Upload gambar terlebih dahulu!")
 
     else:
-        with st.spinner('Converting...'):
+        with st.spinner('Memulai Konversi...'):
 
             sketchImage = get_sketched_image(uploaded_file.read())
 
             time.sleep(2)
             # image.image(sketchImage)
-            st.success('Converted!')
+            st.success('Konversi Selesai!')
             st.success(
-                'Click "Download Image" below the sketched image to download the image')
+                'Klik "Download Image" untuk mengunduh sketsa hasil konversi')
             image = st.image(sketchImage)
-            st.sidebar.success("Please scroll down for your sketched image!")
+            # st.sidebar.success("Please scroll down for your sketched image!")
 
 
-if st.button("Download Image"):
+if st.button("Download"):
     if uploaded_file:
         sketchedImage = get_sketched_image(uploaded_file.read())
         image.image(sketchedImage)
@@ -77,4 +75,4 @@ if st.button("Download Image"):
         st.markdown(get_image_download_link(result, "sketched.jpg",
                                             'Download '+"Sketched.jpg"), unsafe_allow_html=True)
     else:
-        st.error("Please upload a image first")
+        st.error("Upload gambar terlebih dahulu!")
