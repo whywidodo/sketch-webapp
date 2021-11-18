@@ -34,15 +34,13 @@ def get_sketched_image(img):
 
 
 st.title("Konversi Gambar ke Sketsa")
-
 st.sidebar.title("Unggah Gambar")
-
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
 img = Image.open("upload.jpg")
 image = st.image(img)
-
 uploaded_file = st.sidebar.file_uploader(" ", type=['png', 'jpg', 'jpeg'])
+
 
 if uploaded_file is not None:
     image.image(uploaded_file)
